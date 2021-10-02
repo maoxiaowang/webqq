@@ -1,0 +1,165 @@
+{% extends 'zone/base.html' %}
+{% load i18n static %}
+{% load zone_tags %}
+{% block title_content %}QQ空间{% endblock %}
+{% block css %}
+  <link href="{% static 'zone/libs/sweetalert2/sweetalert2.min.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block container_content %}
+  <div class="row mt-3">
+    <div class="col-8">
+      <div id="post-container">
+        <form action="{% url 'zone:posts_create' %}" method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            {{ form.content.get_label }}
+            {{ form.content }}
+          </div>
+          <button type="submit" class="btn btn-primary">{% trans 'Say something' %}</button>
+        </form>
+        <div id="post-list" data-url="{% url 'zone:posts' %}">暂无数据</div>
+      </div>
+    </div>
+    <div class="col-4">
+      右
+    </div>
+  </div>
+{% endblock %}
+
+{% block js %}
+  <script src="{% static 'zone/libs/jquery.validate/jquery.validate.min.js' %}"></script>
+  <script src="{% static 'zone/libs/sweetalert2/sweetalert2.min.js' %}"></script>
+  <script>
+    $(function () {
+      let urls = {
+        postsCreate: "{% url 'zone:posts_create' %}",
+        postsDelete: "{% url 'zone:posts_delete' 0 %}"
+      };
+
+      // 异步加载列表数据
+      function bindPageClick() {
+        $('.page-link').click(function (e) {
+          e.preventDefault();
+          loadPostList($(this).attr('data-page'))
+        });
+      }
+
+      function loadPostList(page) {
+        let pageParamString = '';
+        page = page || getUrlParam('page') || '1';
+        if (page) {
+          pageParamString = '?page=' + page
+        }
+        let $postList = $('#post-list');
+        $.ajax({
+          url: $postList.attr('data-url') + pageParamString,
+          success: function (response) {
+            $postList.replaceWith(response);
+            bindPageClick();
+            bindDeleteModal()
+          }
+        })
+      }
+
+      loadPostList();
+
+      // 绑定表单提交
+      function bindSubmitPost() {
+        let $form = $('#post-container > form');
+        let validator = $form.validate({
+          rules: {
+            content: {
+              required: true,
+              minlength: 2,
+              maxlength: 1024,
+            },
+          },
+          errorElement: 'div',
+          errorClass: 'alert alert-danger',
+          validClass: 'alert alert-success'
+        });
+
+        $form.submit(function (e) {
+          e.preventDefault();
+          if (!validator.form()) {
+            return false;
+          }
+          $.ajax({
+            url: $form.attr('action'),
+            type: $form.attr('method'),
+            data: $form.serialize(),
+            success: function (response) {
+              toastr.success('Created successfully');
+              loadPostList('last')
+            }
+          })
+        });
+      }
+
+      bindSubmitPost();
+
+      // 绑定列表项删除
+      /**
+      function bindDeleteModal() {
+        let deleteModal = document.getElementById('post-delete-modal');
+        var deleteBSModal = new bootstrap.Modal(deleteModal, {
+          keyboard: false
+        });
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+          let $modal = $(this);
+          // 拿到post id
+          let deleteBtn = $(event.relatedTarget);
+          let postId = deleteBtn.parent().attr('data-post-id');
+          let $postContent = $('#post-list').find('[data-post-id=' + postId + ']').find('p');
+          $modal.find('#post-content-preview').text($postContent.text().slice(0, 5));
+          $modal.find('#delete-post-btn').click(function () {
+            $.ajax({
+              url: urls.postsDelete.replace('0', postId),
+              type: 'DELETE',
+              success: function (response) {
+                if (response.result) {
+                  deleteBSModal.hide();
+                  loadPostList()
+                }
+              }
+            })
+          })
+        })
+      }
+       **/
+      function bindDeleteModal() {
+        $.each($('#post-list').find('[data-delete-trigger]'), function (i, item) {
+          $(item).click(function (e) {
+            Swal.fire({
+              title: 'Are you sure?',
+              text: "You won't be able to revert this!",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                let $trigger = $(e.target);
+                let postId = $trigger.parent().attr('data-post-id');
+                $.ajax({
+                  url: urls.postsDelete.replace('0', postId),
+                  type: 'DELETE',
+                  success: function (response) {
+                    if (response.result) {
+                      loadPostList()
+                    }
+                  }
+                })
+              }
+            })
+          })
+        });
+
+      }
+
+
+    })
+  </script>
+{% endblock %}

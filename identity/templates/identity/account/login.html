@@ -1,0 +1,67 @@
+{% extends 'identity/account/base.html' %}
+{% load i18n static %}
+{% block title_content %}{% trans 'Login' %}{% endblock %}
+{% block main_content %}
+<form id="login-form" action="{% url 'identity:login' %}" method="post">
+  <img class="mb-4" src="{% static 'identity/images/qq_icon.jpeg' %}" alt="" width="72" height="72">
+  <h1 class="h3 mb-3 fw-normal">{% trans 'Please sign in' %}</h1>
+  {% csrf_token %}
+  <div class="form-floating">
+    {{ form.username }}
+    {{ form.username.label_tag }}
+    {{ form.username.errors }}
+  </div>
+  <div class="form-floating">
+    {{ form.password }}
+    {{ form.password.label_tag }}
+    {{ form.password.errors }}
+  </div>
+
+  <div>
+    {{ form.non_field_errors }}
+  </div>
+
+  <button class="w-100 btn btn-lg btn-primary" type="submit">{% trans 'Sign in' %}</button>
+  <p class="mt-5 mb-3 text-muted">© 2017–2021</p>
+</form>
+{% endblock %}
+{% block js %}
+  <script src="{% static 'identity/libs/jquery.validate/jquery.validate.min.js' %}"></script>
+  <script>
+  $(function () {
+    let $loginForm = $('#login-form');
+    let validator = $loginForm.validate({
+      rules: {
+        username: {
+          required: true,
+          maxlength: 12,
+          minlength: 4,
+        },
+        password: {
+          required: true,
+          minlength: 8
+        }
+      },
+      errorElement: 'div',
+      errorClass: 'alert alert-danger',
+      validClass: 'alert alert-success'
+    });
+
+    $loginForm.submit(function (e) {
+      e.preventDefault();
+      if (!validator.form()) {
+        return false;
+      }
+      $.ajax({
+        url: $loginForm.attr('action'),
+        type: $loginForm.attr('method'),
+        data: $loginForm.serialize(),
+        success: function (response) {
+          console.log(response)
+        }
+      })
+    });
+  });
+
+  </script>
+{% endblock %}

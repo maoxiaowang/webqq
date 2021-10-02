@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <title>{% block title_content %}{% endblock %}</title>
+
+  <meta name="theme-color" content="#7952b3">
+  {% block base_css %}
+    <link href="{% static 'identity/libs/bootstrap/bootstrap.css' %}" rel="stylesheet">
+    <link href="{% static 'identity/libs/toastr/toastr.min.css' %}" rel="stylesheet">
+    <link href="{% static 'identity/account/signin.css' %}" rel="stylesheet">
+    <style>
+    .bd-placeholder-img {
+      font-size: 1.125rem;
+      text-anchor: middle;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+    }
+
+    @media (min-width: 768px) {
+      .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+      }
+    }
+  </style>
+    {% block css %}{% endblock %}
+  {% endblock %}
+</head>
+<body class="text-center">
+  <main class="form-signin">
+    {% block main_content %}{% endblock %}
+  </main>
+  {% block base_js %}
+    {# jquery #}
+    <script src="{% static 'identity/libs/bootstrap/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'identity/libs/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'identity/libs/cookie/jquery.cookie.min.js' %}"></script>
+    <script src="{% static 'identity/libs/toastr/toastr.min.js' %}"></script>
+    <script src="{% static 'identity/base.js' %}"></script>
+    {% block js %}{% endblock %}
+  {% endblock %}
+</body>
+</html>

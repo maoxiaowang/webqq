@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title_content %}{% endblock %}</title>
+  {% block base_css %}
+    <link href="{% static 'zone/libs/bootstrap/bootstrap.css' %}" rel="stylesheet">
+    <link href="{% static 'zone/libs/toastr/toastr.min.css' %}" rel="stylesheet">
+    {% block css %}{% endblock %}
+  {% endblock %}
+</head>
+<body>
+{% block body_content %}
+  <div class="container">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Navbar</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+                aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Features</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Pricing</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                 data-bs-toggle="dropdown" aria-expanded="false">
+                Dropdown link
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                <li><a class="dropdown-item" href="#">Action</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li><a class="dropdown-item" href="#">Something else here</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    {% block container_content %}
+    {% endblock %}
+  </div>
+{% endblock %}  {# body_content #}
+
+{% block base_js %}
+  <script src="{% static 'zone/libs/bootstrap/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'zone/libs/jquery/jquery.min.js' %}"></script>
+  <script src="{% static 'zone/libs/cookie/jquery.cookie.min.js' %}"></script>
+  <script src="{% static 'zone/libs/toastr/toastr.min.js' %}"></script>
+  <script src="{% static 'zone/base.js' %}?v=1"></script>
+  {% block js %}{% endblock %}
+{% endblock %}
+</body>
+</html>
